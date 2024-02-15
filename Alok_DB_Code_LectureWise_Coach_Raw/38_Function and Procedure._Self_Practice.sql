@@ -1,0 +1,221 @@
+--23-03-21 Monday Function and Procedure...
+
+
+
+
+create database batch11_16321
+use batch11_16321
+create table Employee
+(
+id int primary key identity,
+name varchar(50),
+gender varchar(50),
+salary int,
+department varchar(50)
+)
+insert into Employee(name,gender,salary,department)values('alok srivastava','male',400,'IT')
+insert into Employee(name,gender,salary,department)values('rubina khan','female',800,'HR')
+insert into Employee(name,gender,salary,department)values('Ashutosh kumar','male',300,'IT')
+insert into Employee(name,gender,salary,department)values('pooja','female',500,'Sales')
+insert into Employee(name,gender,salary,department)values('Biraj','male',700,'HR')
+insert into Employee(name,gender,salary,department)values('chintu','female',600,'Sales')
+insert into Employee(name,gender,salary,department)values('pp','other',450,'IT')
+insert into Employee(name,gender,salary,department)values('kk','other',550,'HR')
+insert into Employee(name,gender,salary,department)values('Dayanand','male',350,'Sales')
+insert into Employee(name,gender,salary,department)values('Anwar','male',650,'HR')
+
+
+alter table Employee add dob date
+update Employee set gender=1 where id=1
+update Employee set gender=1 where id=3
+update Employee set gender=2 where id=4
+update Employee set gender=3 where id=7
+update Employee set gender=3 where id=8
+update Employee set gender=1 where id=10
+update Employee set gender=1 where id=11
+update Employee set gender=2 where id=12
+update Employee set gender=1 where id=13
+
+
+-------------------------
+CREATE FUNCTION FN_1(@DOB DATE)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @AGE INT
+	SELECT @AGE=DATEDIFF(YEAR,@DOB,GETDATE())
+	RETURN @AGE
+END
+
+SELECT DBO.FN_1('01-01-1991')
+alter proc sp_emp_get
+as
+begin
+select id,name,dbo.FN_2(gender)Gender,salary,convert(varchar(50),dob,106)DateOfBirth,department,DBO.FN_1(dob)Age from Employee
+end
+
+
+-------------------------------------------------------
+
+CREATE FUNCTION FN_2(@Gender int)
+RETURNS VARCHAR(50)
+AS
+BEGIN
+	DECLARE @GNAME VARCHAR(50)
+		if(@Gender=1)
+			begin
+				set @GNAME='male'
+			end
+		else if(@Gender=2)
+			begin
+				set @GNAME='female'
+			end
+		else if(@Gender=3)
+			begin
+				set @GNAME='other'
+			end
+	RETURN @GNAME
+END
+
+--------------------------------------------------------------
+alter table Employee alter column age varchar(50)
+-----------------------------------------------------------
+select * from Employee
+select name,department from Employee
+select (name+department)Detail from Employee
+select (name+' '+department)Detail from Employee
+select (name+space(5)+department)Detail from Employee
+select (name+space(5)+department+space(5)+salary)Detail from Employee
+select (name+space(5)+department+space(5)+convert(varchar(50),salary))Detail from Employee
+select (name+space(5)+department+space(5)+cast(salary as varchar(50)))Detail from Employee
+
+
+select convert(varchar(50),salary) from Employee 
+select cast(salary as varchar(50)) from Employee 
+select convert(int,name) from Employee 
+
+select GETDATE()
+select convert(varchar(50),GETDATE())
+select cast(GETDATE()as varchar(50))
+select convert(varchar(50),GETDATE(),106)
+----------------------------------------------------------------------------
+--------------------------------------------------------------------
+create table #Student
+(
+id int primary key identity,
+name varchar(50),
+age int
+)
+select * from #student
+insert into #student(name,age)values('alok',36)
+insert into #student(name,age)values('Bhiraj',31)
+insert into #student(name,age)values('vimlesh',32)
+
+
+create table ##Stu
+(
+id int primary key identity,
+name varchar(50),
+age int
+)
+select * from ##stu
+insert into ##stu(name,age)values('dayanand',36)
+insert into ##stu(name,age)values('deepankar',31)
+insert into ##stu(name,age)values('valmiki',32)
+---------------------------------------------------------------------------
+select * from Employee
+begin transaction
+update Employee set name='Rohit' where id=8
+commit transaction
+
+--------------------------------------------------------------------
+create table Items
+(
+itemid int primary key identity,
+itemname varchar(50),
+itemprice int,
+itemqty int
+)
+insert into Items(itemname,itemprice,itemqty)values('LED',22000,500)
+insert into Items(itemname,itemprice,itemqty)values('LAPTOP',30000,400)
+insert into Items(itemname,itemprice,itemqty)values('Mobile',15000,700)
+
+create table Sold
+(
+soldid int primary key identity,
+itemid int,
+qty int
+)
+
+alter proc sp_transaction
+@itemid int,
+@qty int
+as
+begin
+	begin try
+		begin transaction
+		insert into Sold(itemid,qty)values(@itemid,@qty)
+		update Items set itemqty=itemqty-@qty where itemid='pppp'
+		commit transaction
+		print 'TRANSACTION SUCCESSFULL !!!'
+	end try
+
+	begin catch
+		rollback transaction
+		print 'TRANSACTION FAILED !!!'
+	end catch
+	
+end
+
+exec sp_transaction 2,15
+select * from Items
+select * from Sold
+----------------------------------------------------------------------
+select * from Employee
+create proc sp_salary_get
+@id int
+as
+begin
+	select salary from Employee where id=@id
+end
+
+exec sp_salary_get 4
+-------------------------------------------------
+create proc sp_salaryy_get
+@id int
+as
+begin
+	declare @p int
+	select @p=salary from Employee where id=@id
+	return @p
+end
+
+declare @k int
+exec @k=sp_salaryy_get 4
+print @k
+-------------------------------------------------------
+create proc sp_name_get  --- error
+@id int
+as
+begin
+	declare @p varchar(50)
+	select @p=name from Employee where id=@id
+	return @p
+end
+
+declare @k varchar(50)
+exec @k=sp_name_get 4
+print @k
+
+-----------------------------------------------
+create procedure sp_namee_get 
+@id int,
+@m varchar(50) out
+as
+begin
+	select @m=name from Employee where id=@id
+end
+
+declare @k varchar(50)
+exec sp_namee_get 4,@k output
+print @k
