@@ -1085,11 +1085,375 @@ set IDENTITY_INSERT dbo.Customers on
 GO
 SET IDENTITY_INSERT [dbo].[Customers] OFF
 
-insert into Customers(CustomerName,contactname,address,city,postalcode,country) values('Fahad ALi','Siddiqui','Atlanta, US','Atlanta','213122','')
+insert into Customers(CustomerName,contactname,address,city,postalcode,country) values('Fahad ALi','Siddiqui','Atlanta, US','213122','Pakistan')
 
+insert into Customers(CustomerName,contactname,address,city,postalcode,country) values('Fahad ALi','Siddiqui','Atlanta, US','213122','India')
 
 
 select * from Customers
+
+
+select CustomerName,ContactName,Country,City,
+case
+when country = 'KK' then 'Indian'
+when country = 'PP' then 'Foreigner'
+--else 'No country found'
+end as Citizenship -- used only for aliasing
+from Customers -- returns Null in citizenship column
+
+
+select CustomerName,ContactName,Country,City,
+case
+when country = 'India' then 'Indian'
+when country <> 'india' then 'Foreigner'
+else 'No country found'
+end as Citizenship -- used only for aliasing
+from Customers -- returns Null in citizenship column
+
+select * --City, Country 
+from Customers
+
+update Customers set City='Bunkingum' where CustomerID in (9,10)
+
+select CustomerName,City,Country
+from customers
+order by (case 
+when city is null then country
+else city
+end)
+
+
+select CustomerName,City,Country
+from customers
+order by (case 
+when Country is null then City
+else City
+end)
+
+
+
+select CustomerName,ContactName,Country,City,
+case
+when country = 'India' then 'Indian'
+when country <> 'india' then 'Foreigner'
+else 'No country found'
+end as Citizenship -- used only for aliasing
+from Customers -- returns Null in citizenship column 
+
+select CustomerName,City,Country,
+case 
+when Country = 'India' then 'Indian'
+else City
+end as MessageText
+from Customers
+
+
+
+select CustomerName,City,Country,
+case 
+when Country = 'India' then City
+else City
+end as MessageText
+from Customers
+
+select * from Products_1
+
+-- SQL ISNULL(), COALESCE(), and NVL() Functions, IFNULL(), 
+
+create table product
+(
+P_id int primary key identity,
+ProductName varchar(100),
+UnitPrice int,
+UnitsInStock int,
+UnitsOnOrder int,
+)
+
+insert into Product (ProductName,UnitPrice,UnitsInStock,UnitsOnOrder) values('Jarlsberg',10.45,16,15)
+insert into Product (ProductName,UnitPrice,UnitsInStock) values('Laptop',10.89,11)		
+insert into Product (ProductName,UnitPrice,UnitsInStock) values('Mobile',12.45,12)		
+insert into Product (ProductName,UnitPrice,UnitsInStock,UnitsOnOrder) values('Trimmer',11.35,13,15)		
+
+select * from product
+
+
+SELECT ProductName, UnitPrice * (UnitsInStock + UnitsOnOrder) as TotalAmount
+FROM Product;
+
+--SQL Server
+--The SQL Server ISNULL() function lets you return an alternative value when an expression is NULL:
+
+SELECT ProductName, UnitPrice * (UnitsInStock + ISNULL(UnitsOnOrder, 0))
+FROM Product;
+select * from product
+
+--or we can use the COALESCE() function, like this:
+
+SELECT ProductName, UnitPrice * (UnitsInStock + COALESCE(UnitsOnOrder, 0))
+FROM Product;
+
+select ProductName, Unitprice * (UnitsInStock + Coalesce(UnitsOnOrder, 1))
+from Product
+
+select  * from product
+
+SELECT ProductName, UnitPrice * (UnitsInStock + ISNULL(UnitsOnOrder, 10))
+FROM Product;
+select * from product
+
+
+select ProductName, UnitPrice , ISNULL(UnitsOnOrder, 100) from Product
+
+-- basically ISNULL Function NULL value ko kisi bhi value(Column type ke according) se replace kar deta hai.... in short yahi hai
+
+
+select ProductName, UnitPrice , ISNULL(UnitsOnOrder, '') from Product
+--'' -means 0
+
+
+--What is a Stored Procedure?
+--A stored procedure is a prepared SQL code that you can save, 
+--so the code can be reused over and over again.
+
+--So if you have an SQL query that you write over and over again, 
+--save it as a stored procedure, and then just call it to execute it.
+
+--You can also pass parameters to a stored procedure, so that the stored
+--procedure can act based on the parameter value(s) that is passed.
+
+--Stored Procedure Syntax
+
+--CREATE PROCEDURE procedure_name
+--AS
+--sql_statement
+--GO;
+
+--Execute a Stored Procedure
+--EXEC procedure_name;
+
+create procedure Prodct_insertt
+as
+select * from product
+go
+
+
+EXEC Prodct_insertt
+
+create procedure sp_Product_table_GET
+@productid int
+as
+select * from product where P_id = @productid
+go
+
+exec sp_Product_table_GET  @productid=1
+
+
+
+create procedure sp_Product_Record_GET
+@productid int,
+@ProductName varchar(100)
+as
+begin
+select * from product where P_id = @productid and ProductName=@ProductName
+end
+
+exec sp_Product_Record_GET @productid =2, @productname='laptop'
+
+
+--SQL Comments
+--Single Line Comments
+--Single line comments start with --.
+--Any text between -- and the end of the line will be ignored (will not be executed).
+
+--/*Multi-line Comments
+--Multi-line comments start with /* and end with */.
+--Any text between /* and */ will be ignored.
+--The following example uses a multi-line comment as an explanation:
+
+--------------------------------
+
+-- Example
+
+SELECT * FROM Customers WHERE (CustomerName LIKE 'L%'
+OR CustomerName LIKE 'R%' /*OR CustomerName LIKE 'S%'
+OR CustomerName LIKE 'T%'*/ OR CustomerName LIKE 'W%')
+AND Country='USA'
+ORDER BY CustomerName;
+
+-- SQL Operator 
+-- W3SCHOOL Link -- https://www.w3schools.com/sql/sql_operators.asp
+
+--Types of SQL Operators
+--We have various SQL operators, and they are as follows:
+
+--SQL Arithmetic operators
+--SQL Comparison operators
+--SQL Logical operators
+--SQL Compound Operators
+--SQL Bitwise Operators
+--SQL Unary Operator
+
+--SQL Arithmetic Operators
+
+--Operator	Description	
+--+			Add	
+---			Subtract	
+--*			Multiply	
+--/			Divide	
+--%			Modulo
+
+-- Example
+select 30+10 -- 40     
+select 2*3 -- 6
+select 25-3 -- 22
+select 29/3-- 9
+select 20%3 --2
+
+
+--SQL Bitwise Operators -- need to study in detail
+
+--Operator	Description
+--&			Bitwise AND
+--|			Bitwise OR
+--^			Bitwise exclusive OR
+
+--Example
+select 10 & 20 -- 0
+select 10 | 20 -- 30
+select 10 ^ 20 -- 30
+
+select 10 & 10 -- 10
+select 10 | 20 -- 30
+select 10 ^ 20 -- 30
+
+--How does bitwise & operator work?
+--Remarks. The bitwise AND operator ( & ) compares each bit of the first operand to the 
+--corresponding bit of the second operand. If both bits are 1, the corresponding result
+--bit is set to 1. Otherwise, the corresponding result bit is set to 0.
+
+--SQL Comparison Operators
+--Operator		Description	
+--1	=				Equal to	
+--2	>				Greater than	
+--3	<				Less than	
+--4	>=				Greater than or equal to	
+--5	<=				Less than or equal to	
+--6	<>				Not equal to
+--7	!<				Not less than
+--8	!=				Not Equal to
+--9	! >				Not greater than
+
+
+--Example
+
+select * from product where UnitsInStock > 20 
+select * from product where UnitsInStock < 20 
+select * from product where UnitsInStock >= 20 
+select * from product where UnitsInStock <= 20 
+select * from product where UnitsInStock = 11 
+select * from product where UnitsInStock <> 20 
+
+
+--SQL Compound Operators
+
+--Operator			Description
+--	+=						Add equals
+--	-=						Subtract equals
+--	*=						Multiply equals
+--	/=						Divide equals
+--	%=						Modulo equals
+--	&=						Bitwise AND equals
+--	^-=						Bitwise exclusive equals
+--	|*=						Bitwise OR equals
+
+
+--Compound operators execute some operation and set an original value to the result of the operation.
+--For example, if a variable @x equals 35, then @x += 2 takes the original value of @x, 
+--add 2 and sets @x to that new value (37). Adds some amount to the original value and 
+--sets the original value to the result.
+
+declare @a int 
+declare @b int =10
+
+select (UnitsInStock+=10)  from Product
+
+select UnitsInStock from product
+
+--SQL Logical Operators
+--	  Operator				Description	
+--1		ALL						TRUE if all of the subquery values meet the condition	
+--2		AND						TRUE if all the conditions separated by AND is TRUE	
+--3		ANY						TRUE if any of the subquery values meet the condition	
+--4		BETWEEN					TRUE if the operand is within the range of comparisons	
+--5		EXISTS					TRUE if the subquery returns one or more records	
+--6		IN						TRUE if the operand is equal to one of a list of expressions	
+--7		LIKE					TRUE if the operand matches a pattern	
+--8		NOT						Displays a record if the condition(s) is NOT TRUE	
+--9		OR						TRUE if any of the conditions separated by OR is TRUE	
+--10	SOME					TRUE if any of the subquery values meet the condition
+
+
+-----------------===========================================================-----------------------------------------
+
+--SQL Database
+
+--create database databasename
+--create database testDB
+--drop database testDB
+
+
+--The SQL BACKUP DATABASE Statement
+--The BACKUP DATABASE statement is used in SQL Server 
+--to create a full back up of an existing SQL database.
+
+--Syntax
+BACKUP DATABASE databasename
+TO DISK = 'filepath';
+
+
+--The SQL BACKUP WITH DIFFERENTIAL Statement
+--A differential back up only backs up the parts of the database
+--that have changed since the last full database backup.
+
+--Syntax
+BACKUP DATABASE databasename
+TO DISK = 'filepath'
+WITH DIFFERENTIAL;
+
+
+--BACKUP DATABASE Example
+--The following SQL statement creates a full back up of the 
+--existing database "testDB" to the D disk:
+
+--Example
+BACKUP DATABASE testDB
+TO DISK = 'D:\backups\testDB.bak';
+
+backup database  W3_SCHOOL
+to disk = 'C:\DatabaseBackup\W3_SCHOOL.bak'
+
+
+--BACKUP WITH DIFFERENTIAL Example
+--The following SQL statement creates a differential back up of the database "testDB":
+
+--Example
+BACKUP DATABASE testDB
+TO DISK = 'D:\backups\testDB.bak'
+WITH DIFFERENTIAL;
+--Tip: A differential back up reduces the back up time (since only the changes are backed up).\
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
