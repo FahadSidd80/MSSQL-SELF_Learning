@@ -1443,12 +1443,606 @@ WITH DIFFERENTIAL;
 --Tip: A differential back up reduces the back up time (since only the changes are backed up).\
 
 
+------------------------------Learning from 22/02/24--------------------------------------------
+
+CREATE TABLE Persons (
+    PersonID int primary key identity,
+    LastName varchar(255),
+    FirstName varchar(255),
+    Address varchar(255),
+    City varchar(255),
+	Pincode int,
+	birthday date 
+)
+
+select * from persons
+																													   MM/DD/YYYY -- insert in this format 12/15/2024
+insert into Persons(lastName,FirstName,Address,City,Pincode,Birthday)values('Ali','Fahad','Lucknow','Aminabad',228119,GETDATE())
+insert into Persons(lastName,FirstName,Address,City,Pincode,Birthday)values('Ali','Hmza','Lucknow','Aminabad' ,228199,GETDATE())
+insert into Persons(lastName,FirstName,Address,City,Pincode,Birthday)values('Ali','Anand','Lucknow','Aminabad',228019,GETDATE())
+insert into Persons(lastName,FirstName,Address,City,Pincode,Birthday)values('Ali','Anas','Lucknow','Aminabad' ,228179,GETDATE())
+																													   YYYY/MM/DD -- result in -- 2024-12-15
+
+																													   																											   MM/DD/YYYY -- insert in this format 12/15/2024
+insert into Persons(lastName,FirstName,Address,City,Pincode)values('Ali','Fahad','Lucknow','Aminabad',228119)
+insert into Persons(lastName,FirstName,Address,City,Pincode)values('Ali','Hmza','Lucknow','Aminabad' ,228199)
+insert into Persons(lastName,FirstName,Address,City,Pincode)values('Ali','Anand','Lucknow','Aminabad',228019)
+insert into Persons(lastName,FirstName,Address,City,Pincode)values('Ali','Anas','Lucknow','Aminabad' ,228179)
+																													   
+
+drop table persons
+
+
+CREATE TABLE Student_Backup AS
+table persons
+
+CREATE TABLE contact_backup 
+AS TABLE contacts
+
+--The SQL DROP TABLE Statement
+--The DROP TABLE statement is used to drop an existing table in a database.
+
+drop table persons
+
+select * from persons
+
+--SQL TRUNCATE TABLE
+--The TRUNCATE TABLE statement is used to delete the data inside a table, but not the table itself.
+
+truncate table persons
+
+--SQL ALTER TABLE Statement
+
+--The ALTER TABLE statement is used to add, delete, or modify columns in an existing table.
+--The ALTER TABLE statement is also used to add and drop various constraints on an existing table.
+
+--ALTER TABLE - ADD Column
+--To add a column in a table, use the following syntax:
+
+--ALTER TABLE table_name
+--ADD column_name datatype;
+
+ALTER TABLE persons
+ADD Pincode varchar(100)  default text '228119'
+
+alter table persons add email varchar(100)
+
+select * from persons
+
+
+--ALTER TABLE - DROP COLUMN
+--To delete a column in a table, use the following syntax (notice that some database systems don't allow deleting a column):
+
+--ALTER TABLE table_name
+--DROP COLUMN column_name;
+
+
+alter table persons
+drop column email
+
+alter table persons drop column country
+
+--ALTER TABLE - RENAME COLUMN
+--To rename a column in a table, use the following syntax:
+
+--ALTER TABLE table_name
+--RENAME COLUMN old_name to new_name;
+
+alter table persons
+rename column PersonID to Id
+
+--ALTER TABLE - ALTER/MODIFY DATATYPE
+--To change the data type of a column in a table, use the following syntax:
+
+--SQL Server / MS Access:
+
+--ALTER TABLE table_name
+--ALTER COLUMN column_name datatype;
+
+alter table Persons
+alter column FirstName int
+
+alter table Persons
+alter column Pincode varchar(100)
+
+alter table persons
+drop column Country
+
+insert into  Persons(Pincode)values('Fa1232')
+
+select * from  Persons
+
+alter table Persons
+drop column Birthday
+
+
+--alter table Persons
+--alter column  Birthday year -- not valid in SQL may be
+
+--date type take date in MDY format and returns in YMD
+
+alter table persons
+add birthday date 
+
+
+
+--SQL Constraints
+
+--SQL Create Constraints
+--Constraints can be specified when the table is created with the CREATE TABLE statement,
+--or after the table is created with the ALTER TABLE statement.
+
+--CREATE TABLE table_name (
+--    column1 datatype constraint,
+--    column2 datatype constraint,
+--    column3 datatype constraint,
+--    ....
+--);
+
+
+--Constraints can be column level or table level. Column level constraints apply to a column, 
+--and table level constraints apply to the whole table.
+
+--NOT NULL			- Ensures that a column cannot have a NULL value
+--UNIQUE			- Ensures that all values in a column are different
+--PRIMARY KEY		- A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
+--FOREIGN KEY		- Prevents actions that would destroy links between tables
+--CHECK				- Ensures that the values in a column satisfies a specific condition
+--DEFAULT			- Sets a default value for a column if no value is specified
+--CREATE INDEX		- Used to create and retrieve data from the database very quickly
+
+
+create table ConstraintsCheck
+(
+id int primary key identity,
+name varchar(100) not null,
+Country varchar(100) unique,
+status int default 0,
+)
+
+
+insert into ConstraintsCheck(name,country) values('Fahad Ali','Pakistan')
+
+insert into ConstraintsCheck(name,country) values('','UAE')
+insert into ConstraintsCheck(name,country) values('','Kuwait')
+
+select * from ConstraintsCheck
+
+
+
+CREATE TABLE Student (
+    ID int NOT NULL unique identity,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255) NOT NULL,
+    Age int
+)
+
+
+insert into Student(lastName,FirstName)values('Ali','Fahad')
+
+insert into Student(lastName,FirstName)values('Ali','Fahad')
+insert into Student(lastName,FirstName,Age)values('Siddiqui','Hamza',23)
+
+
+select * from Student
+
+--SQL NOT NULL on ALTER TABLE
+--To create a NOT NULL constraint on the "Age" column when the "Persons" table is already created, use the following SQL:
+
+--SQL Server / MS Access:
+
+--ALTER TABLE Persons
+--ALTER COLUMN Age int NOT NULL;
+
+Alter table Student
+alter column age int not null
+
+delete from Student where id =1
+
+--SQL UNIQUE Constraint
+--The UNIQUE constraint ensures that all values in a column are different.
+
+--Both the UNIQUE and PRIMARY KEY constraints provide a guarantee for uniqueness 
+--for a column or set of columns.
+
+--A PRIMARY KEY constraint automatically has a UNIQUE constraint.
+--However, you can have many UNIQUE constraints per table, but only 
+--one PRIMARY KEY constraint per table.
+
+
+--To name a UNIQUE constraint, and to define a UNIQUE constraint on multiple 
+--columns, use the following SQL syntax:
+
+CREATE TABLE Employeerec (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    CONSTRAINT UC_Person UNIQUE (ID,LastName)
+)
+
+insert into Employeerec(id,Lastname,firstname,age)values(1,'Fahad','Ali','23')
+insert into Employeerec(id,Lastname,firstname,age)values(2,'hamza','Ali','23')
+insert into Employeerec(id,Lastname,firstname,age)values(3,'Anas','Ali','23')
+insert into Employeerec(id,Lastname,firstname,age)values(1,'Kamal','Ali','23')
+
+select * from Employeerec
+
+create table Library
+(
+id int not null,
+book varchar(100) not null,
+subject varchar(100) not null,
+department varchar(200),
+constraint UK_Library UNIQUE (id,book,subject,department)
+)
+
+
+insert into Library(id,book,subject,department)values(1,'Maths','Maths','Engineering')
+insert into Library(id,book,subject,department)values(2,'English','Literature','Management')
+insert into Library(id,book,subject,department)values(3,'Hindi','Sahitya','BBC')
+insert into Library(id,book,subject,department)values(4,'Science','Tech','Social')
+
+select * from Library
+
+ALTER TABLE Persons
+ADD UNIQUE (PersonID)
+
+select * from Persons
+
+alter table Persons
+add unique (LastName)
+
+--To name a UNIQUE constraint, and to define a UNIQUE constraint on multiple columns,
+--use the following SQL syntax:
+
+--MySQL / SQL Server / Oracle / MS Access:
+
+--ALTER TABLE Persons
+--ADD CONSTRAINT UC_Person UNIQUE (ID,LastName);
+
+--UC_Person   is a name of unique Constarints
+
+--DROP a UNIQUE Constraint
+--To drop a UNIQUE constraint, use the following SQL:
+
+--MySQL:
+
+--ALTER TABLE Persons
+--DROP INDEX UC_Person;
+
+--alter table Library
+--drop index UK_Library -- The operation 'ALTER TABLE DROP INDEX' is supported only with memory optimized tables.
+
+--SQL Server / Oracle / MS Access:
+
+--ALTER TABLE Persons
+--DROP CONSTRAINT UC_Person;
+
+alter table Library
+drop CONSTRAINT UK_Library  -- remove constrains from whole column
+
+
+insert into Library(id,book,subject,department)values(1,'Maths','Maths','Engineering')
+insert into Library(id,book,subject,department)values(2,'English','Literature','Management')
+insert into Library(id,book,subject,department)values(3,'Hindi','Sahitya','BBC')
+insert into Library(id,book,subject,department)values(4,'Science','Tech','Social')
+
+select * from Library
+
+
+--SQL PRIMARY KEY Constraint
+--The PRIMARY KEY constraint uniquely identifies each record in a table.
+
+--Primary keys must contain UNIQUE values, and cannot contain NULL values.
+
+--A table can have only ONE primary key; and in the table, this primary key can 
+--consist of single or multiple columns (fields).
+
+
+CREATE TABLE registration (
+    ID int NOT NULL PRIMARY KEY,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int
+)
+
+insert into registration(ID,lastName,FirstName,Age) values(1,'Fahad','Ali',34)
+insert into registration(lastName,FirstName,Age) values('Fahad','Ali',34)
+insert into registration(ID,lastName,FirstName,Age) values(2,'Fahad','Ali',34)
+
+CREATE TABLE registration_1 (
+    ID int PRIMARY KEY,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int
+)
+
+insert into registration_1(ID,lastName,FirstName,Age) values(1,'Fahad','Ali',34)
+insert into registration_1(lastName,FirstName,Age) values('Fahad','Ali',34)
+insert into registration_1(ID,lastName,FirstName,Age) values(1,'Fahad','Ali',34)
+
+
+--CREATE TABLE Persons (
+--    ID int NOT NULL,
+--    LastName varchar(255) NOT NULL,
+--    FirstName varchar(255),
+--    Age int,
+--    CONSTRAINT PK_Person PRIMARY KEY (ID,LastName)
+--)
+--Note: In the example above there is only ONE PRIMARY KEY (PK_Person). 
+--However, the VALUE of the primary key is made up of TWO COLUMNS (ID + LastName).
+-- in simple word 2 column ki value ko milake ek primary bani hai.
+-- dono ki alag alag value deke insert kar sakte hia
+
+create table CompanyX
+(
+id int not null,
+lastname varchar(100),
+age int,
+constraint pk_CompanyX Primary key (id,lastname)
+)
+
+insert into CompanyX(id,lastname,age)values(1,'Fahad',23)
+
+select * from CompanyX
+
+insert into CompanyX(id,lastname,age)values(2,'Ali',23)
+insert into CompanyX(id,lastname,age)values(2,'fahad',23)
+
+--SQL PRIMARY KEY on ALTER TABLE
+--To create a PRIMARY KEY constraint on the "ID" column when the table is already created, use the following SQL:
+
+--MySQL / SQL Server / Oracle / MS Access:
+
+--ALTER TABLE Persons
+--ADD PRIMARY KEY (ID);
+
+
+create table tbPrimary(
+id int ,
+name varchar(100),
+age int
+)
+alter table tbPrimary
+add primary key (id)
+
+alter table tbprimary
+alter column id int not null
+
+--Note: If you use ALTER TABLE to add a primary key, the primary key column(s) 
+--must have been declared to not contain NULL values (when the table was first created).
+
+--DROP a PRIMARY KEY Constraint
+--To drop a PRIMARY KEY constraint, use the following SQL:
+
+ALTER TABLE Persons
+DROP CONSTRAINT PK_Person;
+
+alter table CompanyX
+drop constraint pk_CompanyX  -- iske liye hamare pass constraint ka name hona chaiyre nahi to possible nahi hai
+
+--SQL FOREIGN KEY Constraint
+--The FOREIGN KEY constraint is used to prevent actions that would destroy links between tables.
+
+--A FOREIGN KEY is a field (or collection of fields) in one table, that refers to the PRIMARY KEY in another table.
+
+--The table with the foreign key is called the child table, and the table with the primary key is called the referenced or parent table.
+
+
+--SQL FOREIGN KEY on CREATE TABLE
+--The following SQL creates a FOREIGN KEY on the "PersonID" column when the "Orders" table is created:
+
+CREATE TABLE Orders (
+    OrderID int NOT NULL PRIMARY KEY ,
+    OrderNumber int NOT NULL,
+    PersonID int FOREIGN KEY REFERENCES Persons_1(PersonID)
+);
+
+create table Persons_1
+(
+PersonID int not null primary key identity,
+name varchar(100),
+age int
+)
+
+select * from Orders
+select * from Persons_1
+
+insert into Orders(OrderID,OrderNumber,PersonID)values(3,345,1)
+insert into Orders(OrderID,OrderNumber,PersonID)values(4,345,3)
+insert into Orders(OrderID,OrderNumber,PersonID)values(5,345,1)
+
+insert into Persons_1(name,age)values('Fahad',25)
+insert into Persons_1(name,age)values('Ali',28)
+insert into Persons_1(name,age)values('Kmaran',26)
+
+-- agar kisi table ki primary key me jo value hoti hai wahi value doosri table ki reference key me ho sakti hia.
+
+
+create table COllege  -- parent Table/ Referenced table
+(
+CollegeID int not null primary key identity,
+colname varchar(100),
+Address varchar(100)
+)
+
+
+insert into College(colname,address)values('KNIPSS','Sultanpur')
+insert into College(colname,address)values('RRSMT','USA')
+insert into College(colname,address)values('Cambridge','Canada')
+
+create table School -- child table
+(
+id int primary key identity not null,
+name varchar(100),
+city varchar(100),
+CollegeID int FOREIGN KEY REFERENCES College(CollegeID)
+)
+
+
+insert into School(name,city,collegeid)values('Cognt','Noida',1)
+insert into School(name,city,collegeid)values('Cognt','Noida',2)
+insert into School(name,city,collegeid)values('Cognt','Noida',3)
+
+select * from College
+select * from School
 
 
 
 
+create table LibraryBook -- child table
+(
+id int primary key identity not null,
+name varchar(100),
+city varchar(100),
+LibraryKey int FOREIGN KEY REFERENCES College(CollegeID)
+)
+
+insert into LibraryBook(name,city,librarykey)values('jamia','Delhi',1)
+insert into LibraryBook(name,city,librarykey)values('AMU','Aligarh',2)
+insert into LibraryBook(name,city,librarykey)values('BHU','Varanasi',3)
 
 
+GO
+SET IDENTITY_INSERT [dbo].LibraryBook OFF
+
+select * from College
+select * from LibraryBook
+
+create table LibraryBook_1 -- child table
+(
+id int primary key  not null,
+name varchar(100),
+city varchar(100),
+LibraryKey int identity FOREIGN KEY REFERENCES College(CollegeID)
+)
+
+
+insert into LibraryBook_1(id,name,city)values(1,'jamia','Delhi')
+insert into LibraryBook_1(id,name,city)values(2,'AMU','Aligarh')
+insert into LibraryBook_1(id,name,city)values(3,'BHU','Varanasi')
+
+
+--To allow naming of a FOREIGN KEY constraint, and for defining a FOREIGN KEY 
+--constraint on multiple columns, use the following SQL syntax:
+
+CREATE TABLE Orders_1 (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    CONSTRAINT FK_PersonOrder FOREIGN KEY (PersonID)
+    REFERENCES Persons(PersonID)
+);
+
+select * from Orders_1
+
+--SQL FOREIGN KEY on ALTER TABLE
+--To create a FOREIGN KEY constraint on the "PersonID" 
+--column when the "Orders" table is already created, use the following SQL:
+
+ALTER TABLE Orders
+ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);
+
+create table Aotomobile
+(
+id int primary key not null,
+name varchar(100)
+)
+
+
+create table Bike
+(
+Bikeid int primary key identity not null,
+name varchar(100)
+)
+
+Alter table Bike
+add foreign key (BikeID) references Aotomobile(BikeID)
+
+
+
+ALTER TABLE Aotomobile
+ADD CONSTRAINT FK_BikeAutomobile
+FOREIGN KEY (Bikeid) REFERENCES Bike(Bikeid);
+
+ALTER TABLE Orders
+DROP CONSTRAINT FK_PersonOrder;
+
+
+--SQL CHECK Constraint
+--The CHECK constraint is used to limit the value range that can be placed in a column.
+
+--If you define a CHECK constraint on a column it will allow only certain values for this column.
+
+--If you define a CHECK constraint on a table it can limit the values in certain columns based on values in other columns in the row.
+
+--SQL CHECK on CREATE TABLE
+--The following SQL creates a CHECK constraint on the "Age" column when the "Persons" table is created. The CHECK constraint ensures that the age of a person must be 18, or older:
+
+
+CREATE TABLE Persons_2 (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int CHECK (Age>=18)
+)
+
+insert into Persons_2(id,lastname,Age)values(1,'Ali',19)
+insert into Persons_2(id,lastname,Age)values(2,'Fahad',18)
+insert into Persons_2(id,lastname,Age)values(3,'ahmza',17)
+
+
+select * from Persons_2
+
+--To allow naming of a CHECK constraint, and for defining a CHECK constraint on multiple columns, use the following SQL syntax:
+
+--MySQL / SQL Server / Oracle / MS Access:
+
+CREATE TABLE Persons_3 (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    City varchar(255),
+    CONSTRAINT CHK_Person CHECK (Age>=18 AND City='Sandnes')
+);
+
+
+insert into Persons_3(id,lastname,Age,City)values(2,'Fahad',19,'Sandnes')
+
+insert into Persons_3(id,lastname,Age,City)values(1,'ahmza',18,'Sandnes')
+
+select * from Persons_3
+
+create table VoterEMployee
+(
+vid int primary key,
+age int
+)
+
+
+alter table VoterEMployee
+add check (age>= 18)
+
+create table VoterEMployee_2
+(
+vid int primary key,
+age int,
+city varchar(100)
+)
+
+
+alter table VoterEMployee_1
+add check (age >= 18 and City='Sultanpur')
+
+
+alter table VoterEMployee_1
+add constraint CK_Check1 check (age >= 18 and City='Sultanpur')
+
+alter table VoterEMployee_1
+drop constraint CK_Check1
 
 
 
